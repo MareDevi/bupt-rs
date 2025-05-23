@@ -1,14 +1,11 @@
-use crate::ucloud::types::{
-UserInfo,
-UserRecord,
-};
-use anyhow::{anyhow, Result};
-use regex::Regex;
-use std::collections::HashMap;
+use crate::ucloud::types::{UserInfo, UserRecord};
+use crate::utils::utils::get_cookie_and_execution;
+use anyhow::Result;
 use reqwest::{
-    header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE, COOKIE, REFERER, USER_AGENT},
     Client,
+    header::{AUTHORIZATION, CONTENT_TYPE, COOKIE, HeaderMap, HeaderValue, REFERER, USER_AGENT},
 };
+use std::collections::HashMap;
 
 pub async fn refresh_token(refresh_token: &str) -> Result<UserInfo, String> {
     let client = Client::new();
@@ -28,44 +25,13 @@ pub async fn refresh_token(refresh_token: &str) -> Result<UserInfo, String> {
     Ok(user_info)
 }
 
-// 获取cookie和execution
-pub async fn get_cookie_and_execution() -> Result<(String, String)> {
-    let client = Client::builder()
-        .redirect(reqwest::redirect::Policy::none())
-        .build()?;
-    let res = client
-        .get("https://auth.bupt.edu.cn/authserver/login?service=https://ucloud.bupt.edu.cn")
-        .send()
-        .await?;
-
-    let cookie = res
-        .headers()
-        .get_all("set-cookie")
-        .iter()
-        .map(|v| v.to_str().unwrap_or_default())
-        .collect::<Vec<_>>()
-        .join("; ");
-    if cookie.is_empty() {
-        return Err(anyhow!(
-            "Failed to obtain the cookie from the HTML response"
-        ));
-    }
-    let html = res.text().await?;
-    let re = Regex::new(r#"<input name="execution" value="(.*?)""#).unwrap();
-    let execution = re
-        .captures(&html)
-        .and_then(|caps| caps.get(1).map(|m| m.as_str().to_string()))
-        .ok_or_else(|| anyhow!("Failed to obtain the execution value from the HTML response"))?;
-    Ok((cookie, execution))
-}
-
 // 登录
 pub async fn login(username: &str, password: &str) -> Result<(UserInfo, UserRecord), String> {
     let client = Client::builder()
         .redirect(reqwest::redirect::Policy::none())
         .build()
         .map_err(|e| e.to_string())?;
-    let (cookie, execution) = get_cookie_and_execution()
+    let (cookie, execution) = get_cookie_and_execution("https://ucloud.bupt.edu.cn")
         .await
         .map_err(|e| e.to_string())?;
     let bodyp = format!(
@@ -171,7 +137,6 @@ pub async fn login(username: &str, password: &str) -> Result<(UserInfo, UserReco
     };
     Ok((user_info, user_record))
 }
-
 
 //unit tests
 #[cfg(test)]

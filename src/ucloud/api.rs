@@ -1,10 +1,10 @@
-use crate::ucloud::types::{
+use super::types::{
     AssignmentInfo, CourseFileAttachment, CourseFileNode, CourseFileResource, CourseInfo,
-    DetailResponse, ItemResponse, UndoneListResponse,
+    CourseSigninInfo, DetailResponse, ItemResponse, UndoneListResponse,
 };
 use anyhow::Result;
 use reqwest;
-use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE};
+use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 
 pub async fn get_undone_list(token: &str, user_id: &str) -> Result<UndoneListResponse, String> {
     let client = reqwest::Client::new();
@@ -124,7 +124,6 @@ pub async fn get_assignment_link(id: &str, token: &str) -> Result<String, String
     Ok(url.to_string())
 }
 
-
 pub async fn get_course_file(
     user_id: &str,
     token: &str,
@@ -204,7 +203,11 @@ pub async fn get_course_file(
         let children = node
             .get("children")
             .and_then(|v| v.as_array())
-            .map(|arr| arr.iter().map(|child| Box::new(parse_course_file_node(child))).collect())
+            .map(|arr| {
+                arr.iter()
+                    .map(|child| Box::new(parse_course_file_node(child)))
+                    .collect()
+            })
             .unwrap_or_else(Vec::new);
 
         CourseFileNode {
@@ -265,7 +268,6 @@ pub async fn get_courses(user_id: &str, token: &str) -> Result<Vec<CourseInfo>, 
     Ok(courses)
 }
 
-
 pub async fn get_course_assignment(
     course_id: &str,
     user_id: &str,
@@ -307,15 +309,58 @@ pub async fn get_course_assignment(
     Ok(json.data.records)
 }
 
+pub async fn sign_in(
+    userid: &str,
+    token: &str,
+    classinfo: CourseSigninInfo,
+) -> Result<String, String> {
+    let client = reqwest::Client::new();
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        AUTHORIZATION,
+        HeaderValue::from_static("Basic cG9ydGFsOnBvcnRhbF9zZWNyZXQ="),
+    );
+    headers.insert(
+        "blade-auth",
+        HeaderValue::from_str(token).map_err(|e| e.to_string())?,
+    );
+    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
 
+    let url = "https://apiucloud.bupt.edu.cn/ykt-site/attendancedetailinfo/sign";
+    let formatted_time = chrono::Local::now()
+        .format("%Y-%m-%dT%H:%M:%S%.3f")
+        .to_string();
+    println!("formatted_time: {}", formatted_time);
+    let data = serde_json::json!({
+        "attendanceDetailInfo": {
+            "attendanceId": classinfo.attendance_detail_info.attendance_id,
+            "siteId": classinfo.attendance_detail_info.site_id,
+            "userId": userid,
+            "classLessonId": classinfo.attendance_detail_info.class_lesson_id,
+        },
+        "qrCodeCreateTime": formatted_time
+    });
+    let res = client
+        .post(url)
+        .headers(headers)
+        .json(&data)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    println!("status: {}", res.status());
+
+    Ok(res.text().await.unwrap_or_default())
+}
 
 // unit test
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env;
     use crate::ucloud::auth::login;
     use crate::ucloud::types::UserInfo;
+    use crate::utils::utils::scan_qrcode;
+    use std::env;
 
     async fn setup() -> UserInfo {
         let username = env::var("UCLOUD_USERNAME").unwrap();
@@ -355,6 +400,14 @@ mod tests {
             "1887746144045940746",
         )
         .await;
+        println!("{:?}", result);
+    }
+    #[tokio::test]
+    async fn test_sign_in() {
+        let userinfo = setup().await;
+        let path = "/home/MareDevi/downloads/test.jpeg";
+        let result = scan_qrcode(path);
+        let result = sign_in(&userinfo.user_id, &userinfo.access_token, result.unwrap()).await;
         println!("{:?}", result);
     }
 }

@@ -222,3 +222,18 @@ pub struct CourseFileNode {
     pub attachment_vos: Vec<CourseFileAttachment>,
     pub children: Vec<Box<CourseFileNode>>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CourseSigninInfo {
+    pub qr_code_create_time: String,
+    pub attendance_detail_info: AttendanceDetailInfo,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AttendanceDetailInfo {
+    pub site_id: String,
+    pub attendance_id: String,
+    pub user_id: String,
+    pub class_lesson_id: String,
+}
