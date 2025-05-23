@@ -1,4 +1,4 @@
-use crate::ucloud::types::{AttendanceDetailInfo, CourseSigninInfo};
+use crate::ucloud::types::CourseSigninInfo;
 use anyhow::{Result, anyhow};
 use image;
 use regex::Regex;
@@ -40,9 +40,14 @@ pub async fn get_cookie_and_execution(serivice: &str) -> Result<(String, String)
 
 pub fn scan_qrcode(path: &str) -> Result<CourseSigninInfo> {
     let img = image::open(path)?.to_luma8();
-    let mut img = rqrr::PreparedImage::prepare(img);
-    let grids = img.detect_grids();
-    let (_meta, content) = grids[0].decode()?;
+    let mut prepared_img = rqrr::PreparedImage::prepare(img);
+    let content = prepared_img
+        .detect_grids()
+        .into_iter()
+        .next()
+        .ok_or_else(|| anyhow!("No QR code grid detected"))?
+        .decode()
+        .map(|(_meta, content)| content)?;
     println!("content: {}", content);
     // content checkwork|id=...&siteId=...&createTime=...&classLessonId=...
     let re = Regex::new(
