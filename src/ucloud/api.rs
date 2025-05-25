@@ -6,6 +6,7 @@ use anyhow::Result;
 use reqwest;
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_undone_list(token: &str, user_id: &str) -> Result<UndoneListResponse, String> {
     let client = reqwest::Client::new();
     let mut headers = HeaderMap::new();
@@ -50,6 +51,7 @@ pub async fn get_undone_list(token: &str, user_id: &str) -> Result<UndoneListRes
 }
 
 // 获取作业详情
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_detail(id: &str, token: &str) -> Result<DetailResponse, String> {
     let client = reqwest::Client::new();
     let mut headers = HeaderMap::new();
@@ -91,6 +93,7 @@ pub async fn get_detail(id: &str, token: &str) -> Result<DetailResponse, String>
     Ok(result)
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_assignment_link(id: &str, token: &str) -> Result<String, String> {
     let client = reqwest::Client::new();
     let mut headers = HeaderMap::new();
@@ -124,6 +127,7 @@ pub async fn get_assignment_link(id: &str, token: &str) -> Result<String, String
     Ok(url.to_string())
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_course_file(
     user_id: &str,
     token: &str,
@@ -228,6 +232,7 @@ pub async fn get_course_file(
     Ok(serde_json::to_string(&nodes).unwrap())
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_courses(user_id: &str, token: &str) -> Result<Vec<CourseInfo>, String> {
     let client = reqwest::Client::new();
     let mut headers = HeaderMap::new();
@@ -268,6 +273,7 @@ pub async fn get_courses(user_id: &str, token: &str) -> Result<Vec<CourseInfo>, 
     Ok(courses)
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_course_assignment(
     course_id: &str,
     user_id: &str,
@@ -309,6 +315,7 @@ pub async fn get_course_assignment(
     Ok(json.data.records)
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn sign_in(
     userid: &str,
     token: &str,
@@ -357,7 +364,7 @@ pub async fn sign_in(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ucloud::auth::login;
+    use crate::ucloud::auth::ucloud_login;
     use crate::ucloud::types::UserInfo;
     use crate::utils::tools::scan_qrcode;
     use std::env;
@@ -365,7 +372,7 @@ mod tests {
     async fn setup() -> UserInfo {
         let username = env::var("UCLOUD_USERNAME").unwrap();
         let password = env::var("UCLOUD_PASSWORD").unwrap();
-        login(&username, &password).await.unwrap().0
+        ucloud_login(&username, &password).await.unwrap().0
     }
     #[tokio::test]
     async fn test_get_undone_list() {

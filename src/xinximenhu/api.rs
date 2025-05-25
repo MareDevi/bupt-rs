@@ -1,5 +1,6 @@
 use reqwest::Client;
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_card_balance(client: &Client) -> Result<String, String> {
     let resp = client
         .get("http://my.bupt.edu.cn/system/resource/app/cuser/getwxtsA.jsp")
@@ -29,14 +30,14 @@ pub async fn get_card_balance(client: &Client) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::xinximenhu::auth::login;
+    use crate::xinximenhu::auth::xinximenhu_login;
     use std::env;
 
     #[tokio::test]
     async fn test_get_card_balance() {
         let username = env::var("UCLOUD_USERNAME").unwrap();
         let password = env::var("UCLOUD_PASSWORD").unwrap();
-        let client = login(&username, &password).await.unwrap();
+        let client = xinximenhu_login(&username, &password).await.unwrap();
         let balance = get_card_balance(&client).await.unwrap();
         println!("Card balance: {}", balance);
     }

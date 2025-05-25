@@ -7,7 +7,8 @@ use reqwest::{
 use std::sync::Arc;
 
 // 登录
-pub async fn login(username: &str, password: &str) -> Result<Client, String> {
+#[cfg_attr(feature = "tauri", tauri::command)]
+pub async fn xinximenhu_login(username: &str, password: &str) -> Result<Client, String> {
     let cookie_store = Arc::new(Jar::default());
     let client = Client::builder()
         .cookie_provider(cookie_store.clone())
@@ -92,7 +93,7 @@ mod tests {
     async fn test_login() {
         let username = env::var("UCLOUD_USERNAME").unwrap();
         let password = env::var("UCLOUD_PASSWORD").unwrap();
-        let result = login(&username, &password).await;
+        let result = xinximenhu_login(&username, &password).await;
         println!("{:?}", result);
     }
 }

@@ -7,7 +7,8 @@ use std::sync::Arc;
 
 use crate::utils::tools::get_cookie_and_execution;
 
-pub async fn login(username: &str, password: &str) -> Result<String, String> {
+#[cfg_attr(feature = "tauri", tauri::command)]
+pub async fn elec_login(username: &str, password: &str) -> Result<String, String> {
     let cookie_store = Arc::new(Jar::default());
     let client = Client::builder()
         .cookie_provider(cookie_store.clone())
@@ -89,7 +90,7 @@ mod tests {
     async fn test_login() {
         let username = env::var("UCLOUD_USERNAME").unwrap();
         let password = env::var("UCLOUD_PASSWORD").unwrap();
-        let cookie = login(&username, &password).await.unwrap();
+        let cookie = elec_login(&username, &password).await.unwrap();
         println!("cookie: {}", cookie);
     }
 }

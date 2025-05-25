@@ -7,6 +7,7 @@ use reqwest::{
 };
 use std::collections::HashMap;
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn refresh_token(refresh_token: &str) -> Result<UserInfo, String> {
     let client = Client::new();
     let mut form = HashMap::new();
@@ -26,7 +27,11 @@ pub async fn refresh_token(refresh_token: &str) -> Result<UserInfo, String> {
 }
 
 // 登录
-pub async fn login(username: &str, password: &str) -> Result<(UserInfo, UserRecord), String> {
+#[cfg_attr(feature = "tauri", tauri::command)]
+pub async fn ucloud_login(
+    username: &str,
+    password: &str,
+) -> Result<(UserInfo, UserRecord), String> {
     let client = Client::builder()
         .redirect(reqwest::redirect::Policy::none())
         .build()
@@ -148,7 +153,7 @@ mod tests {
     async fn test_login() {
         let username = env::var("UCLOUD_USERNAME").unwrap();
         let password = env::var("UCLOUD_PASSWORD").unwrap();
-        let result = login(&username, &password).await;
+        let result = ucloud_login(&username, &password).await;
         assert!(result.is_ok());
     }
 }

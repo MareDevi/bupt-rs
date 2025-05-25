@@ -38,6 +38,7 @@ pub async fn get_cookie_and_execution(serivice: &str) -> Result<(String, String)
     Ok((cookie, execution))
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub fn scan_qrcode(path: &str) -> Result<CourseSigninInfo> {
     let img = image::open(path)?.to_luma8();
     let mut prepared_img = rqrr::PreparedImage::prepare(img);

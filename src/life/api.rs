@@ -2,6 +2,7 @@ use super::types::{Drom, DromElec, Floor, OuterResp, Partment};
 use anyhow::Result;
 use reqwest::Client;
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_partment_list(area: &str, cookie: String) -> Result<Vec<Partment>> {
     let url = "https://app.bupt.edu.cn/buptdf/wap/default/part";
     println!("{}", cookie);
@@ -30,6 +31,7 @@ pub async fn get_partment_list(area: &str, cookie: String) -> Result<Vec<Partmen
     Ok(outer.d.data)
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_floor_list(partment_id: &str, area: &str, cookie: String) -> Result<Vec<Floor>> {
     let url = "https://app.bupt.edu.cn/buptdf/wap/default/floor";
     let client = Client::new();
@@ -55,6 +57,7 @@ pub async fn get_floor_list(partment_id: &str, area: &str, cookie: String) -> Re
     Ok(outer.d.data)
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_drom_list(
     floor_id: &str,
     partment_id: &str,
@@ -89,6 +92,7 @@ pub async fn get_drom_list(
     Ok(outer.d.data)
 }
 
+#[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_drom_elec(
     drom_id: &str,
     floor_id: &str,
@@ -129,14 +133,14 @@ pub async fn get_drom_elec(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::life::auth::login;
+    use crate::life::auth::elec_login;
     use std::env;
     use tokio;
 
     async fn get_test_cookie() -> String {
         let username = env::var("UCLOUD_USERNAME").unwrap();
         let password = env::var("UCLOUD_PASSWORD").unwrap();
-        login(&username, &password).await.unwrap()
+        elec_login(&username, &password).await.unwrap()
     }
 
     #[tokio::test]
