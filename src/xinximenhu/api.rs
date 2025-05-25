@@ -17,9 +17,7 @@ pub async fn get_card_balance(client: &Client) -> Result<String, String> {
             resp.status(),
         ));
     }
-
-    println!("{:?}", resp);
-
+    
     let text = resp.text().await.map_err(|e| e.to_string())?;
     println!("Response: {}", text);
     let json: serde_json::Value = serde_json::from_str(&text).map_err(|e| e.to_string())?;
@@ -32,21 +30,13 @@ pub async fn get_card_balance(client: &Client) -> Result<String, String> {
 mod tests {
     use super::*;
     use crate::xinximenhu::auth::login;
-    use reqwest::cookie::Jar;
     use std::env;
-    use std::sync::Arc;
 
     #[tokio::test]
     async fn test_get_card_balance() {
         let username = env::var("UCLOUD_USERNAME").unwrap();
         let password = env::var("UCLOUD_PASSWORD").unwrap();
-        let jar = Arc::new(Jar::default());
-        let client = reqwest::Client::builder()
-            .cookie_provider(jar.clone())
-            .redirect(reqwest::redirect::Policy::none())
-            .build()
-            .unwrap();
-        let _ = login(&username, &password).await.unwrap();
+        let client = login(&username, &password).await.unwrap();
         let balance = get_card_balance(&client).await.unwrap();
         println!("Card balance: {}", balance);
     }
