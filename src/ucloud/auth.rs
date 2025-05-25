@@ -1,5 +1,5 @@
 use crate::ucloud::types::{UserInfo, UserRecord};
-use crate::utils::utils::get_cookie_and_execution;
+use crate::utils::tools::get_cookie_and_execution;
 use anyhow::Result;
 use reqwest::{
     Client,

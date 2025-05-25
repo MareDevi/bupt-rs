@@ -1,8 +1,11 @@
-use reqwest::{header::{HeaderMap, HeaderValue, CONTENT_TYPE, REFERER, USER_AGENT}, Client};
-use reqwest::cookie::{Jar, CookieStore};
+use reqwest::cookie::{CookieStore, Jar};
+use reqwest::{
+    Client,
+    header::{CONTENT_TYPE, HeaderMap, HeaderValue, REFERER, USER_AGENT},
+};
 use std::sync::Arc;
 
-use crate::utils::utils::get_cookie_and_execution;
+use crate::utils::tools::get_cookie_and_execution;
 
 pub async fn login(username: &str, password: &str) -> Result<String, String> {
     let cookie_store = Arc::new(Jar::default());
@@ -17,7 +20,10 @@ pub async fn login(username: &str, password: &str) -> Result<String, String> {
     let auth_url = url::Url::parse("https://auth.bupt.edu.cn").unwrap();
     for c in init_cookie.split(';') {
         if let Some((k, v)) = c.trim().split_once('=') {
-            cookie_store.add_cookie_str(&format!("{}={}; Domain=auth.bupt.edu.cn; Path=/", k, v), &auth_url);
+            cookie_store.add_cookie_str(
+                &format!("{}={}; Domain=auth.bupt.edu.cn; Path=/", k, v),
+                &auth_url,
+            );
         }
     }
     let bodyp = format!(
@@ -31,7 +37,10 @@ pub async fn login(username: &str, password: &str) -> Result<String, String> {
     );
     let mut headers = HeaderMap::new();
     headers.insert("authority", HeaderValue::from_static("auth.bupt.edu.cn"));
-    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/x-www-form-urlencoded"));
+    headers.insert(
+        CONTENT_TYPE,
+        HeaderValue::from_static("application/x-www-form-urlencoded"),
+    );
     headers.insert(REFERER, HeaderValue::from_static(
         "https://auth.bupt.edu.cn/authserver/login?service=https://app.bupt.edu.cn/a_bupt/api/sso/cas?redirect=https%3A%2F%2Fapp.bupt.edu.cn%2Fbuptdf%2Fwap%2Fdefault%2Fchong&from=wap",
     ));
@@ -54,7 +63,10 @@ pub async fn login(username: &str, password: &str) -> Result<String, String> {
     let final_url = "https://app.bupt.edu.cn/buptdf/wap/default/chong";
     let final_resp = client
         .get(final_url)
-        .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:138.0) Gecko/20100101 Firefox/138.0")
+        .header(
+            "User-Agent",
+            "Mozilla/5.0 (X11; Linux x86_64; rv:138.0) Gecko/20100101 Firefox/138.0",
+        )
         .send()
         .await
         .map_err(|e| e.to_string())?;
@@ -66,9 +78,6 @@ pub async fn login(username: &str, password: &str) -> Result<String, String> {
     let cookies = cookie_store.cookies(&app_url).ok_or("无法获取cookie")?;
     Ok(cookies.to_str().map_err(|_| "cookie编码错误")?.to_string())
 }
-
-
-
 
 // unit test
 #[cfg(test)]

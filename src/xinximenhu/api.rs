@@ -17,7 +17,7 @@ pub async fn get_card_balance(client: &Client) -> Result<String, String> {
             resp.status(),
         ));
     }
-    
+
     let text = resp.text().await.map_err(|e| e.to_string())?;
     println!("Response: {}", text);
     let json: serde_json::Value = serde_json::from_str(&text).map_err(|e| e.to_string())?;

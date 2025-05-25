@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct Partment {
     partment_id: String,
     partment_name: String,
-    partment_floor: u32
+    partment_floor: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

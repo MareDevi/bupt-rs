@@ -169,9 +169,9 @@ pub async fn get_course_file(
             .and_then(|v| v.as_array())
             .unwrap_or(&vec![])
             .iter()
-            .filter_map(|att| {
+            .map(|att| {
                 let res = &att["resource"];
-                Some(CourseFileAttachment {
+                CourseFileAttachment {
                     id: att["id"].as_str().unwrap_or_default().to_string(),
                     resource: CourseFileResource {
                         name: res
@@ -196,7 +196,7 @@ pub async fn get_course_file(
                             .unwrap_or_default()
                             .to_string(),
                     },
-                })
+                }
             })
             .collect();
 
@@ -208,7 +208,7 @@ pub async fn get_course_file(
                     .map(|child| Box::new(parse_course_file_node(child)))
                     .collect()
             })
-            .unwrap_or_else(Vec::new);
+            .unwrap_or_default();
 
         CourseFileNode {
             id: node["id"].as_str().unwrap_or_default().to_string(),
@@ -359,7 +359,7 @@ mod tests {
     use super::*;
     use crate::ucloud::auth::login;
     use crate::ucloud::types::UserInfo;
-    use crate::utils::utils::scan_qrcode;
+    use crate::utils::tools::scan_qrcode;
     use std::env;
 
     async fn setup() -> UserInfo {
