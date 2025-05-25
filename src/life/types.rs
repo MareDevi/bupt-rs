@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 
 // 解析外层结构
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct OuterResp<T> {
     pub e: i32,
     pub m: String,
     pub d: InnerData<T>,
 }
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct InnerData<T> {
     pub data: T,
 }

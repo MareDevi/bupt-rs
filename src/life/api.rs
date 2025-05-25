@@ -3,11 +3,10 @@ use anyhow::Result;
 use reqwest::Client;
 
 #[cfg_attr(feature = "tauri", tauri::command)]
-pub async fn get_partment_list(area: &str, cookie: String) -> Result<Vec<Partment>> {
+pub async fn get_partment_list(area: &str, cookie: String) -> Result<Vec<Partment>, String> {
     let url = "https://app.bupt.edu.cn/buptdf/wap/default/part";
     println!("{}", cookie);
     let client = Client::new();
-    // data : multipart/form-data; area
     let form = [("areaid", area)];
     let resp = client
         .post(url)
@@ -18,21 +17,23 @@ pub async fn get_partment_list(area: &str, cookie: String) -> Result<Vec<Partmen
         )
         .form(&form)
         .send()
-        .await?;
+        .await
+        .map_err(|e| e.to_string())?;
 
     if resp.status() != 200 {
-        return Err(anyhow::anyhow!(
-            "Failed to fetch partment list: {}",
-            resp.status()
-        ));
+        return Err(format!("Failed to fetch partment list: {}", resp.status()));
     }
 
-    let outer: OuterResp<Vec<Partment>> = resp.json().await?;
+    let outer: OuterResp<Vec<Partment>> = resp.json().await.map_err(|e| e.to_string())?;
     Ok(outer.d.data)
 }
 
 #[cfg_attr(feature = "tauri", tauri::command)]
-pub async fn get_floor_list(partment_id: &str, area: &str, cookie: String) -> Result<Vec<Floor>> {
+pub async fn get_floor_list(
+    partment_id: &str,
+    area: &str,
+    cookie: String,
+) -> Result<Vec<Floor>, String> {
     let url = "https://app.bupt.edu.cn/buptdf/wap/default/floor";
     let client = Client::new();
     let form = [("partmentId", partment_id), ("areaid", area)];
@@ -45,15 +46,13 @@ pub async fn get_floor_list(partment_id: &str, area: &str, cookie: String) -> Re
         )
         .form(&form)
         .send()
-        .await?;
+        .await
+        .map_err(|e| e.to_string())?;
 
     if resp.status() != 200 {
-        return Err(anyhow::anyhow!(
-            "Failed to fetch floor list: {}",
-            resp.status()
-        ));
+        return Err(format!("Failed to fetch floor list: {}", resp.status()));
     }
-    let outer: OuterResp<Vec<Floor>> = resp.json().await?;
+    let outer: OuterResp<Vec<Floor>> = resp.json().await.map_err(|e| e.to_string())?;
     Ok(outer.d.data)
 }
 
@@ -63,7 +62,7 @@ pub async fn get_drom_list(
     partment_id: &str,
     area: &str,
     cookie: String,
-) -> Result<Vec<Drom>> {
+) -> Result<Vec<Drom>, String> {
     let url = "https://app.bupt.edu.cn/buptdf/wap/default/drom";
     let client = Client::new();
     let form = [
@@ -80,15 +79,13 @@ pub async fn get_drom_list(
         )
         .form(&form)
         .send()
-        .await?;
+        .await
+        .map_err(|e| e.to_string())?;
 
     if resp.status() != 200 {
-        return Err(anyhow::anyhow!(
-            "Failed to fetch drom list: {}",
-            resp.status()
-        ));
+        return Err(format!("Failed to fetch drom list: {}", resp.status()));
     }
-    let outer: OuterResp<Vec<Drom>> = resp.json().await?;
+    let outer: OuterResp<Vec<Drom>> = resp.json().await.map_err(|e| e.to_string())?;
     Ok(outer.d.data)
 }
 
@@ -99,7 +96,7 @@ pub async fn get_drom_elec(
     partment_id: &str,
     area: &str,
     cookie: String,
-) -> Result<DromElec> {
+) -> Result<DromElec, String> {
     let url = "https://app.bupt.edu.cn/buptdf/wap/default/search";
     let client = Client::new();
     let form = [
@@ -117,15 +114,13 @@ pub async fn get_drom_elec(
         )
         .form(&form)
         .send()
-        .await?;
+        .await
+        .map_err(|e| e.to_string())?;
 
     if resp.status() != 200 {
-        return Err(anyhow::anyhow!(
-            "Failed to fetch drom elec data: {}",
-            resp.status()
-        ));
+        return Err(format!("Failed to fetch drom elec data: {}", resp.status()));
     }
-    let outer: OuterResp<DromElec> = resp.json().await?;
+    let outer: OuterResp<DromElec> = resp.json().await.map_err(|e| e.to_string())?;
     Ok(outer.d.data)
 }
 
