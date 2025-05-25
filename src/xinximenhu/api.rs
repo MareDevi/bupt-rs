@@ -1,13 +1,15 @@
 use reqwest::Client;
 
 #[cfg_attr(feature = "tauri", tauri::command)]
-pub async fn get_card_balance(client: &Client) -> Result<String, String> {
+pub async fn get_card_balance(jsessionid: &str) -> Result<String, String> {
+    let client = Client::new();
     let resp = client
         .get("http://my.bupt.edu.cn/system/resource/app/cuser/getwxtsA.jsp")
         .header(
             "Referer",
             "http://my.bupt.edu.cn/system/resource/code/auth/clogin.jsp",
         )
+        .header("Cookie", format!("JSESSIONID={}", jsessionid))
         .send()
         .await
         .map_err(|e| e.to_string())?;
@@ -26,7 +28,7 @@ pub async fn get_card_balance(client: &Client) -> Result<String, String> {
     Ok(balance.to_string())
 }
 
-// //unit test
+//unit test
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -37,8 +39,8 @@ mod tests {
     async fn test_get_card_balance() {
         let username = env::var("UCLOUD_USERNAME").unwrap();
         let password = env::var("UCLOUD_PASSWORD").unwrap();
-        let client = xinximenhu_login(&username, &password).await.unwrap();
-        let balance = get_card_balance(&client).await.unwrap();
+        let jsessionid = xinximenhu_login(&username, &password).await.unwrap();
+        let balance = get_card_balance(&jsessionid).await.unwrap();
         println!("Card balance: {}", balance);
     }
 }

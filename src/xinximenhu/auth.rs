@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 // 登录
 #[cfg_attr(feature = "tauri", tauri::command)]
-pub async fn xinximenhu_login(username: &str, password: &str) -> Result<Client, String> {
+pub async fn xinximenhu_login(username: &str, password: &str) -> Result<String, String> {
     let cookie_store = Arc::new(Jar::default());
     let client = Client::builder()
         .cookie_provider(cookie_store.clone())
@@ -76,11 +76,20 @@ pub async fn xinximenhu_login(username: &str, password: &str) -> Result<Client, 
     if !final_resp.status().is_success() {
         return Err(format!("无法访问最终页面: {}", final_resp.status()));
     }
-    // 从cookie jar获取最终cookie
+    // 从cookie jar获取JSESSIONID
     let app_url = url::Url::parse("http://my.bupt.edu.cn").unwrap();
     let cookies = cookie_store.cookies(&app_url).ok_or("无法获取cookie")?;
-    let _ = cookies.to_str().map_err(|_| "cookie编码错误")?.to_string();
-    Ok(client)
+    let cookie_str = cookies.to_str().map_err(|_| "cookie编码错误")?.to_string();
+    // 提取JSESSIONID
+    let jsessionid = cookie_str
+        .split(';')
+        .find_map(|c| {
+            c.trim()
+                .strip_prefix("JSESSIONID=")
+                .map(|val| val.to_string())
+        })
+        .ok_or("未找到JSESSIONID")?;
+    Ok(jsessionid)
 }
 
 //unit test
