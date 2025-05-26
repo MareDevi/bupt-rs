@@ -412,7 +412,7 @@ mod tests {
     #[tokio::test]
     async fn test_sign_in() {
         let userinfo = setup().await;
-        let path = "/home/MareDevi/downloads/test.jpeg";
+        let path = "/home/MareDevi/downloads/test.jpg";
         let result = scan_qrcode(path);
         let result = sign_in(&userinfo.user_id, &userinfo.access_token, result.unwrap()).await;
         println!("{:?}", result);

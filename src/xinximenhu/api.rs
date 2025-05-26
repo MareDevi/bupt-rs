@@ -1,7 +1,7 @@
 use reqwest::Client;
 
 #[cfg_attr(feature = "tauri", tauri::command)]
-pub async fn get_card_balance(jsessionid: &str) -> Result<String, String> {
+pub async fn get_card_balance(jsession_id: &str) -> Result<String, String> {
     let client = Client::new();
     let resp = client
         .get("http://my.bupt.edu.cn/system/resource/app/cuser/getwxtsA.jsp")
@@ -9,7 +9,7 @@ pub async fn get_card_balance(jsessionid: &str) -> Result<String, String> {
             "Referer",
             "http://my.bupt.edu.cn/system/resource/code/auth/clogin.jsp",
         )
-        .header("Cookie", format!("JSESSIONID={}", jsessionid))
+        .header("Cookie", format!("JSESSIONID={}", jsession_id))
         .send()
         .await
         .map_err(|e| e.to_string())?;
