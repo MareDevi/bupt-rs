@@ -1,5 +1,5 @@
-use reqwest::cookie::{CookieStore, Jar};
-use reqwest::{
+use crate::http_client::reqwest::cookie::{CookieStore, Jar};
+use crate::http_client::reqwest::{
     Client,
     header::{CONTENT_TYPE, HeaderMap, HeaderValue, REFERER, USER_AGENT},
 };

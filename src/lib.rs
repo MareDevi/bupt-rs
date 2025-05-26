@@ -1,3 +1,4 @@
+mod http_client;
 pub mod life;
 pub mod ucloud;
 pub mod utils;

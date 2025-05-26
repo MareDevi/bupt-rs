@@ -2,9 +2,9 @@ use super::types::{
     AssignmentInfo, CourseFileAttachment, CourseFileNode, CourseFileResource, CourseInfo,
     CourseSigninInfo, DetailResponse, ItemResponse, UndoneListResponse,
 };
+use crate::http_client::reqwest;
+use crate::http_client::reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use anyhow::Result;
-use reqwest;
-use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 
 #[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_undone_list(token: &str, user_id: &str) -> Result<UndoneListResponse, String> {

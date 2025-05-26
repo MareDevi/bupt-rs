@@ -1,4 +1,4 @@
-use reqwest::Client;
+use crate::http_client::reqwest::Client;
 
 #[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_card_balance(jsession_id: &str) -> Result<String, String> {

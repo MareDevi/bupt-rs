@@ -1,8 +1,8 @@
+use crate::http_client::reqwest::Client;
 use crate::ucloud::types::CourseSigninInfo;
 use anyhow::{Result, anyhow};
 use image;
 use regex::Regex;
-use reqwest::Client;
 
 // 获取cookie和execution
 pub async fn get_cookie_and_execution(serivice: &str) -> Result<(String, String)> {

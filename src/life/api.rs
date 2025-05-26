@@ -1,6 +1,6 @@
 use super::types::{Drom, DromElec, Floor, OuterResp, Partment};
+use crate::http_client::reqwest::Client;
 use anyhow::Result;
-use reqwest::Client;
 
 #[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_partment_list(area: &str, cookie: String) -> Result<Vec<Partment>, String> {
