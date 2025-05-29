@@ -29,6 +29,7 @@ pub async fn xinximenhu_login(username: &str, password: &str) -> Result<String, 
             );
         }
     }
+    log::warn!("使用的cookie: {}", init_cookie);
     let bodyp = format!(
         "username={}&password={}",
         urlencoding::encode(username),
@@ -89,6 +90,7 @@ pub async fn xinximenhu_login(username: &str, password: &str) -> Result<String, 
                 .map(|val| val.to_string())
         })
         .ok_or("未找到JSESSIONID")?;
+    log::warn!("登录成功，JSESSIONID: {}", jsessionid);
     Ok(jsessionid)
 }
 

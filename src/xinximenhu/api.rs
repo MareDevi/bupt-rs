@@ -14,6 +14,12 @@ pub async fn get_card_balance(jsession_id: &str) -> Result<String, String> {
         .await
         .map_err(|e| e.to_string())?;
 
+    log::info!(
+        "Response status: {}, headers: {:?}",
+        resp.status(),
+        resp.headers()
+    );
+
     if resp.status() != 200 {
         return Err(format!(
             "Failed to make the initial request: {}",
@@ -25,6 +31,7 @@ pub async fn get_card_balance(jsession_id: &str) -> Result<String, String> {
     println!("Response: {}", text);
     let json: serde_json::Value = serde_json::from_str(&text).map_err(|e| e.to_string())?;
     let balance = json["oddfare"].as_str().ok_or("Failed to parse balance")?;
+    log::info!("Card balance: {}", balance);
     Ok(balance.to_string())
 }
 
