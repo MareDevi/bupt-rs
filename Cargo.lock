@@ -276,7 +276,6 @@ dependencies = [
  "anyhow",
  "chrono",
  "image",
- "log",
  "regex",
  "reqwest",
  "rqrr",
