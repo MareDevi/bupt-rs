@@ -41,6 +41,7 @@ pub async fn get_cookie_and_execution(serivice: &str) -> Result<(String, String)
 #[cfg_attr(feature = "tauri", tauri::command)]
 pub fn scan_qrcode(path: &str) -> Result<CourseSigninInfo> {
     let img = image::open(path)?.to_luma8();
+    println!("img size: {:?}", img.dimensions());
     let mut prepared_img = rqrr::PreparedImage::prepare(img);
     let content = prepared_img
         .detect_grids()
