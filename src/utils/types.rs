@@ -237,3 +237,112 @@ pub struct AttendanceDetailInfo {
     pub user_id: String,
     pub class_lesson_id: String,
 }
+
+// Course Schedule Types for YDJW system
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CourseScheduleResponse {
+    #[serde(rename = "Msg")]
+    pub msg: String,
+    pub code: String,
+    pub data: Vec<CourseScheduleData>,
+    #[serde(rename = "needClassName")]
+    pub need_class_name: String,
+    #[serde(rename = "needClassRoomNub")]
+    pub need_class_room_nub: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CourseScheduleData {
+    pub date: Vec<DateInfo>,
+    pub courses: Vec<CourseDetail>,
+    #[serde(rename = "nodesLst")]
+    pub nodes_lst: Vec<NodeInfo>,
+    pub item: Vec<Vec<Vec<CourseDetail>>>,
+    pub week: i32,
+    pub nodes: Nodes,
+    pub weekday: String,
+    pub bz: String,
+    #[serde(rename = "topInfo")]
+    pub top_info: Vec<TopInfo>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DateInfo {
+    pub xqmc: String, // 星期名称 (一、二、三...)
+    pub mxrq: String, // 明细日期 (2025-06-02)
+    pub zc: String,   // 周次 (15)
+    pub xqid: String, // 星期ID (1-7, 0表示周日)
+    pub rq: String,   // 日期 (02)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CourseDetail {
+    #[serde(rename = "classWeek")]
+    pub class_week: String, // 上课周次 (1-16)
+    #[serde(rename = "teacherName")]
+    pub teacher_name: String, // 教师姓名
+    #[serde(rename = "weekNoteDetail")]
+    pub week_note_detail: String, // 周节次详情 (108,109)
+    #[serde(rename = "buttonCode")]
+    pub button_code: String, // 按钮代码
+    pub xqcolor: String, // 星期颜色
+    pub xkrs: i32,       // 选课人数
+    pub ktmc: String,    // 开课班级
+    #[serde(rename = "classTime")]
+    pub class_time: String, // 上课时间编码 (10809)
+    #[serde(rename = "classroomNub")]
+    pub classroom_nub: String, // 教室编号
+    #[serde(rename = "jx0408id")]
+    pub jx0408id: String, // 教学计划ID
+    #[serde(rename = "buildingName")]
+    pub building_name: String, // 教学楼名称
+    #[serde(rename = "courseName")]
+    pub course_name: String, // 课程名称
+    #[serde(rename = "isRepeatCode")]
+    pub is_repeat_code: String, // 是否重复代码
+    #[serde(rename = "jx0404id")]
+    pub jx0404id: String, // 课程ID
+    #[serde(rename = "weekDay")]
+    pub week_day: String, // 星期几 (1-7)
+    #[serde(rename = "classroomName")]
+    pub classroom_name: String, // 教室名称
+    pub khfs: String,    // 考核方式
+    #[serde(rename = "startTime")]
+    pub start_time: String, // 开始时间
+    #[serde(rename = "endTIme")]
+    pub end_time: String, // 结束时间
+    pub location: String, // 上课地点
+    pub fzmc: String,    // 分组名称
+    #[serde(rename = "classWeekDetails")]
+    pub class_week_details: String, // 上课周次详情
+    #[serde(rename = "coursesNote")]
+    pub courses_note: i32, // 课程备注
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NodeInfo {
+    #[serde(rename = "nodeName")]
+    pub node_name: String, // 节次名称 (第一节)
+    #[serde(rename = "nodeNumber")]
+    pub node_number: String, // 节次编号 (01)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Nodes {
+    pub sw: Vec<String>, // 上午节次
+    pub ws: Vec<String>, // 晚上节次
+    pub zw: Vec<String>, // 中午节次
+    pub xw: Vec<String>, // 下午节次
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TopInfo {
+    #[serde(rename = "semesterId")]
+    pub semester_id: String, // 学期ID
+    pub week: String,    // 周次
+    pub today: String,   // 今天日期
+    pub weekday: String, // 星期
+    #[serde(rename = "maxWeek")]
+    pub max_week: String, // 最大周次
+}
