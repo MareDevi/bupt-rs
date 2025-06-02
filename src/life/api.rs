@@ -2,6 +2,30 @@ use super::types::{Drom, DromElec, Floor, OuterResp, Partment};
 use crate::http_client::reqwest::Client;
 use anyhow::Result;
 
+/// 获取指定区域的宿舍楼列表
+///
+/// # 参数
+/// * `area` - 区域ID，用于标识校区或区域
+/// * `cookie` - 从 [`super::auth::elec_login`] 获取的认证 cookie
+///
+/// # 返回值
+/// * `Ok(Vec<Partment>)` - 宿舍楼信息列表
+/// * `Err(String)` - 错误信息
+///
+/// # 示例
+/// ```no_run
+/// use bupt_rs::life;
+///
+/// #[tokio::main]
+/// async fn main() -> Result<(), String> {
+///     let cookie = life::auth::elec_login("username", "password").await?;
+///     let partments = life::api::get_partment_list("area_id", cookie).await?;
+///     for partment in partments {
+///         println!("宿舍楼: {}", &partment.partment_name);
+///     }
+///     Ok(())
+/// }
+/// ```
 #[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_partment_list(area: &str, cookie: String) -> Result<Vec<Partment>, String> {
     let url = "https://app.bupt.edu.cn/buptdf/wap/default/part";

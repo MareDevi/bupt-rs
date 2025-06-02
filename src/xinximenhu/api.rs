@@ -1,5 +1,30 @@
 use crate::http_client::reqwest::Client;
 
+/// 获取校园卡余额
+///
+/// # 参数
+/// * `jsession_id` - 从 [`super::auth::xinximenhu_login`] 获取的会话 ID
+///
+/// # 返回值
+/// * `Ok(String)` - 校园卡余额（单位：元）
+/// * `Err(String)` - 错误信息
+///
+/// # 示例
+/// ```no_run
+/// use bupt_rs::xinximenhu;
+///
+/// #[tokio::main]
+/// async fn main() -> Result<(), String> {
+///     let jsession_id = xinximenhu::auth::xinximenhu_login("username", "password").await?;
+///     let balance = xinximenhu::api::get_card_balance(&jsession_id).await?;
+///     println!("校园卡余额: {} 元", balance);
+///     Ok(())
+/// }
+/// ```
+///
+/// # 注意事项
+/// - 余额信息可能存在延迟，实际余额以校园卡系统为准
+/// - 会话 ID 具有时效性，过期后需要重新登录
 #[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_card_balance(jsession_id: &str) -> Result<String, String> {
     let client = Client::new();

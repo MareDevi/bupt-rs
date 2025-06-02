@@ -14,30 +14,30 @@ pub struct InnerData<T> {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Partment {
-    partment_id: String,
-    partment_name: String,
-    prartment_floor: Option<String>,
+    pub partment_id: String,
+    pub partment_name: String,
+    pub prartment_floor: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Floor {
-    floor_id: String,
-    floor_name: String,
+    pub floor_id: String,
+    pub floor_name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Drom {
     #[serde(alias = "dromId", alias = "dromNum")]
-    drom_id: String,
-    drom_name: String,
+    pub drom_id: String,
+    pub drom_name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DromElec {
-    time: String,
-    surplus: String,
-    v_total: String,
+    pub time: String,
+    pub surplus: String,
+    pub v_total: String,
 }

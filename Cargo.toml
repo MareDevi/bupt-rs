@@ -2,6 +2,13 @@
 name = "bupt-rs"
 version = "0.1.1"
 edition = "2024"
+authors = ["bupt-rs contributors"]
+readme = "README.md"
+homepage = "https://github.com/maredevi/bupt-rs"
+repository = "https://github.com/maredevi/bupt-rs"
+license = "MIT"
+rust-version = "1.85"
+publish = false
 
 [dependencies]
 anyhow = "1.0.98"

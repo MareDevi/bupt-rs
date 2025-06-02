@@ -3,12 +3,38 @@ use crate::utils::types::CourseScheduleResponse;
 
 /// 获取当前周的课程表
 ///
-/// # Parameters
-/// * `token` - 从ydjw_login获取的认证token
+/// # 参数
+/// * `token` - 从 [`super::auth::ydjw_login`] 获取的认证 token
 ///
-/// # Returns
+/// # 返回值
 /// * `Ok(CourseScheduleResponse)` - 包含课程表数据的结构化响应
 /// * `Err(String)` - 错误信息
+///
+/// # 示例
+/// ```no_run
+/// use bupt_rs::ydjw;
+///
+/// #[tokio::main]
+/// async fn main() -> Result<(), String> {
+///     let token = ydjw::auth::ydjw_login("username", "password").await?;
+///     let schedule = ydjw::api::get_course_schedule(&token).await?;
+///
+///     println!("响应消息: {}", schedule.msg);
+///     println!("响应代码: {}", schedule.code);
+///
+///     for schedule_data in &schedule.data {
+///         println!("第 {} 周课程表:", schedule_data.week);
+///         for course in &schedule_data.courses {
+///             println!("课程: {} - 教师: {} - 地点: {}",
+///                 course.course_name,
+///                 course.teacher_name,
+///                 course.location
+///             );
+///         }
+///     }
+///     Ok(())
+/// }
+/// ```
 #[cfg_attr(feature = "tauri", tauri::command)]
 pub async fn get_course_schedule(token: &str) -> Result<CourseScheduleResponse, String> {
     let client = reqwest::Client::new();
