@@ -5,11 +5,10 @@ use base64::{Engine as _, engine::general_purpose};
 use reqwest::Client;
 use serde_json::Value;
 use std::collections::HashMap;
-use std::error::Error; // 新增这一行
 
 const AES_KEY: &[u8] = b"qzkj1kjghd=876&*";
 
-pub async fn ydjw_login(bupt_acc: &str, password: &str) -> Result<(), Box<dyn Error>> {
+pub async fn ydjw_login(bupt_acc: &str, password: &str) -> Result<String, String> {
     let url = "http://jwglweixin.bupt.edu.cn/bjyddx/login";
     // 内部加密
     let encrypted_password = {
@@ -43,9 +42,40 @@ pub async fn ydjw_login(bupt_acc: &str, password: &str) -> Result<(), Box<dyn Er
         .header("Content-Type", "application/x-www-form-urlencoded")
         .form(&params)
         .send()
-        .await?;
+        .await
+        .map_err(|e| e.to_string())?;
     // 解析JSON响应
-    let result: Value = response.json().await?;
-    println!("{}", serde_json::to_string_pretty(&result)?);
-    Ok(())
+    let result: Value = response.json().await.map_err(|e| e.to_string())?;
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&result).map_err(|e| e.to_string())?
+    );
+
+    result["code"]
+        .as_str()
+        .filter(|&code| code == "1")
+        .and_then(|_| result["data"]["token"].as_str())
+        .map(|token| token.to_string())
+        .ok_or_else(|| {
+            result["Msg"]
+                .as_str()
+                .unwrap_or("Unknown error")
+                .to_string()
+        })
+}
+
+//unit tests
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+
+    #[tokio::test]
+    async fn test_login() {
+        let bupt_acc = env::var("UCLOUD_USERNAME").unwrap();
+        let password = env::var("YDJW_PASSWORD").unwrap();
+        let result = ydjw_login(&bupt_acc, &password).await;
+        assert!(result.is_ok(), "Login failed: {:?}", result);
+        println!("Login successful, token: {}", result.unwrap());
+    }
 }

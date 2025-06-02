@@ -1,5 +1,5 @@
 use crate::http_client::reqwest::Client;
-use crate::ucloud::types::CourseSigninInfo;
+use crate::utils::types::CourseSigninInfo;
 use anyhow::{Result, anyhow};
 use image;
 use regex::Regex;

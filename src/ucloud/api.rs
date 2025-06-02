@@ -1,9 +1,9 @@
-use super::types::{
+use crate::http_client::reqwest;
+use crate::http_client::reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
+use crate::utils::types::{
     AssignmentInfo, CourseFileAttachment, CourseFileNode, CourseFileResource, CourseInfo,
     CourseSigninInfo, DetailResponse, ItemResponse, UndoneListResponse,
 };
-use crate::http_client::reqwest;
-use crate::http_client::reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use anyhow::Result;
 
 #[cfg_attr(feature = "tauri", tauri::command)]
@@ -365,8 +365,8 @@ pub async fn sign_in(
 mod tests {
     use super::*;
     use crate::ucloud::auth::ucloud_login;
-    use crate::ucloud::types::UserInfo;
     use crate::utils::tools::scan_qrcode;
+    use crate::utils::types::UserInfo;
     use std::env;
 
     async fn setup() -> UserInfo {

@@ -2,8 +2,8 @@ use crate::http_client::reqwest::{
     Client,
     header::{AUTHORIZATION, CONTENT_TYPE, COOKIE, HeaderMap, HeaderValue, REFERER, USER_AGENT},
 };
-use crate::ucloud::types::{UserInfo, UserRecord};
 use crate::utils::tools::get_cookie_and_execution;
+use crate::utils::types::{UserInfo, UserRecord};
 use anyhow::Result;
 use std::collections::HashMap;
 
